@@ -60,7 +60,6 @@ icinga2:
             os: Linux
             disk_wfree: 15%
             ssh_port: 22
-            notification.slack: "true"
             http_vhosts:
               Icinga web 2:
                 http_uri: /icingaweb2

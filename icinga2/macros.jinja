@@ -1,10 +1,12 @@
-{% macro printassign(key, value) %}
-  {%- if value is number or "vars" in value  %}
+{%- macro printassign(key, value) %}
+  {#- Check values like: 3, 25, 3s, 45m, 8d #}
+  {%- if value is number or "vars" in value or value in ["false","true"] or key in ["check_interval", "retry_interval"] %}
           {{ key }} = {{ value }}
+  {#- Check string values, the more common #}
   {%- elif value is string %}
           {{ key }} = "{{ value }}"
   {%- endif %}
-{% endmacro %}
+{%- endmacro %}
 
 {%- macro printconfig(type, object, name, config, applyto="", applymethod="")%}
   {%- if applymethod == "to" %}
@@ -23,30 +25,23 @@
           {{key}} "{{ value }}"
       {%- endif %}
     {%- endfor %}
-    {%- for key, value in config.items() if key != "import" %}
-      {#- Check values like: 3, 25, 3s, 45m, 8d #}
-      {%- if value is number or key in ["check_interval", "retry_interval"] %}
-          {{ key }} = {{ value }}
-      {#- Check string values, the more common #}
-      {%- elif value is string %}
-          {{ key }} = "{{ value }}"
+    {%- for key, value in config.items() if key != "import" -%}
+      {{ printassign(key, value) }}
       {#- Handle vars values that can be a dict, list or value #}
-      {%- elif key == "vars"  %}
+      {%- if key == "vars"  %}
         {%- for varkey, varvalue in config.vars.items() %}
           {%- if varvalue is mapping %}
             {%- for k, v in varvalue.items() %}
           vars.{{ varkey }}["{{ k }}"] = {
               {%- if v is not none %}
                 {%- for k1, v1 in v.items() -%}
-                  {{ printassign(k1, v1)|indent(4)}}
+                  {{ printassign(k1, v1)|indent(2)}}
                 {%- endfor %}
               {%- endif %}
           }
             {%- endfor %}
-          {%- elif varvalue is number %}
-          vars.{{ varkey }} = {{ varvalue }}
-          {%- else %}
-          vars.{{ varkey }} = "{{ varvalue }}"
+          {%- else -%}
+            {{ printassign("vars." + varkey, varvalue) }}
           {%- endif %}
         {%- endfor %}
       {#- Handle dict values mapping dict type on yaml with icinga2 syntax #}
@@ -62,7 +57,7 @@
           {{ key }} where {{ item }}
         {%- endfor %}
       {#- Handle lists values mapping list type on yaml with icinga2 syntax #}
-      {%- elif value is iterable %}
+      {%- elif value is iterable and not value is string %}
           {{ key }} = [ {{ value|join(",") }} ]
       {%- endif %}
     {%- endfor %}
