@@ -60,11 +60,6 @@ icinga2:
             os: Linux
             disk_wfree: 15%
             ssh_port: 22
-            http_vhosts:
-              Icinga web 2:
-                http_uri: /icingaweb2
-                http_port: 443
-                http_ssl: "true"
             disks:
               disk:
     groups:
