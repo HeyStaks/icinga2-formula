@@ -1,0 +1,23 @@
+{%- from 'icinga2/map.jinja' import icinga2 with context %}
+{%- set fqdn = salt.grains.get('fqdn') -%}
+
+{% if fqdn != icinga2.master_host -%}
+object Endpoint "{{icinga2.master_host}}" {
+  host = "{{icinga2.master_host}}"
+  port = "5665"
+}
+
+object Zone "master" {
+  endpoints = [ "{{icinga2.master_host}}" ]
+}
+{%- endif %}
+
+object Endpoint NodeName {
+}
+
+object Zone ZoneName {
+  endpoints = [ NodeName ]
+  {% if fqdn != icinga2.master_host -%}
+  parent = "master"
+  {%- endif %}
+}

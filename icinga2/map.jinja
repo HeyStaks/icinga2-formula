@@ -1,0 +1,8 @@
+{% import_yaml 'icinga2/defaults.yaml' as defaults %}
+{% import_yaml 'icinga2/os_family.yaml' as os_family_map %}
+
+{% set os_family_values = salt['grains.filter_by'](os_family_map, grain='os_family') %}
+
+{% do defaults.icinga2.update(os_family_values) %}
+
+{% set icinga2 = salt['pillar.get']( 'icinga2', default=defaults.icinga2, merge=True) %}

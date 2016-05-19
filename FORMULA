@@ -1,0 +1,8 @@
+name: icinga2
+os: Ubuntu
+os_family: Debian
+version: 201605
+release: 0
+summary: Icinga2 Formula
+description: Icinga2 Formula
+top_level_dir: icinga2

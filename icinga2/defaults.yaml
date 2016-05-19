@@ -1,0 +1,201 @@
+icinga2:
+  master_host: salt
+  port: 5665
+  config:
+    templates:
+      generic-host:
+        type: Host
+        conf:
+          max_check_attempts: 3
+          check_interval: 1m
+          retry_interval: 30s
+          check_command: hostalive
+      generic-service:
+        type: Service
+        conf:
+          max_check_attempts: 5
+          check_interval: 1m
+          retry_interval: 30s
+      generic-user:
+        type: User
+      generic-template-all:
+        type: Notification
+        conf:
+          types:
+            - Problem
+            - Acknowledgement
+            - Recovery
+            - Custom
+            - FlappingStart
+            - FlappingEnd
+            - DowntimeStart
+            - DowntimeEnd
+            - DowntimeRemoved
+          period: "24x7"
+      mail-host-notification:
+        type: Notification
+        conf:
+          import: generic-template-all
+          command: mail-host-notification
+          states:
+            - Up
+            - Down
+      mail-service-notification:
+        type: Notification
+        conf:
+          import: generic-template-all
+          command: mail-service-notification
+          states:
+            - OK
+            - Warning
+            - Critical
+            - Unknown
+    hosts:
+      NodeName:
+        type: Host
+        conf:
+          import: generic-host
+          address: 127.0.0.1
+          vars:
+            os: Linux
+            disk_wfree: 15%
+            ssh_port: 22
+            notification.slack: "true"
+            http_vhosts:
+              Icinga web 2:
+                http_uri: /icingaweb2
+                http_port: 443
+                http_ssl: "true"
+            disks:
+              disk:
+    groups:
+      linux-servers:
+        type: HostGroup
+        conf:
+          display_name: "Linux Servers"
+          assign:
+            - host.vars.os == "Linux"
+      windows-servers:
+        type: HostGroup
+        conf:
+          display_name: "Windows Servers"
+          assign:
+            - host.vars.os == "Windows"
+      ping:
+        type: ServiceGroup
+        conf:
+          display_name: "Ping Service"
+          assign:
+            - match("ping*", service.name)
+      http:
+        type: ServiceGroup
+        conf:
+          display_name: "HTTP Service"
+          assign:
+            - match("http*", service.check_command)
+      disk:
+        type: ServiceGroup
+        conf:
+          display_name: "Disk Checks"
+          assign:
+            - match("disk*", service.check_command)
+    downtimes:
+      backup-downtime:
+        type: ScheduledDowntime
+        to: Service
+        conf:
+          author: icingaadmin
+          comment: Scheduled downtime for backup
+          ranges:
+            monday: service.vars.backup_downtime
+            tuesday: service.vars.backup_downtime
+            wednesday: service.vars.backup_downtime
+            thursday: service.vars.backup_downtime
+            friday: service.vars.backup_downtime
+            saturday: service.vars.backup_downtime
+            sunday: service.vars.backup_downtime
+          assign:
+            - service.vars.backup_downtime != ""
+    notifications:
+      mail-icingaadmin-host:
+        type: Notification
+        to: Host
+        conf:
+          import: mail-host-notification
+          user_groups: host.vars.notification.mail.groups
+          users: host.vars.notification.mail.users
+          assign:
+            - host.vars.notification.mail
+      mail-icingaadmin-service:
+        type: Notification
+        to: Service
+        conf:
+          import: mail-service-notification
+          user_groups: host.vars.notification.mail.groups
+          users: host.vars.notification.mail.users
+          assign:
+            - host.vars.notification.mail
+    services:
+      icinga:
+        type: Service
+        conf:
+          import: generic-service
+          check_command: icinga
+          assign:
+            - host.name == NodeName
+      procs:
+        type: Service
+        conf:
+          import: generic-service
+          check_command: procs
+          assign:
+            - host.name == NodeName
+      swap:
+        type: Service
+        conf:
+          import: generic-service
+          check_command: swap
+          assign:
+            - host.name == NodeName
+      users:
+        type: Service
+        conf:
+          import: generic-service
+          check_command: users
+          assign:
+            - host.name == NodeName
+      ping4:
+        type: Service
+        conf:
+          import: generic-service
+          check_command: ping4
+          assign:
+            - host.address
+      ssh:
+        type: Service
+        conf:
+          import: generic-service
+          check_command: ssh
+          assign:
+            - (host.address || host.address6) && host.vars.os == "Linux"
+      load:
+        type: Service
+        conf:
+          import: generic-service
+          check_command: load
+          vars:
+            backup_downtime: "02:00-03:00"
+          assign:
+            - host.name == NodeName
+      http_vhosts:
+        type: Service
+        for: (http_vhost => config in host.vars.http_vhosts)
+        conf:
+          import: generic-service
+          check_command: http
+      disks:
+        type: Service
+        for: (disk => config in host.vars.disks)
+        conf:
+          import: generic-service
+          check_command: disk
