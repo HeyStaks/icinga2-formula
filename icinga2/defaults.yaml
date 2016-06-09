@@ -177,8 +177,6 @@ icinga2:
         conf:
           import: generic-service
           check_command: load
-          vars:
-            backup_downtime: "02:00-03:00"
           assign:
             - host.name == NodeName
       http_vhosts:
