@@ -1,5 +1,6 @@
 icinga2:
   master_host: salt
+  client_mode: local
   port: 5665
   config:
     templates:

@@ -1,7 +1,7 @@
 include:
   - icinga2.pki.node
   - icinga2.config
-  - icinga2.features
+  - icinga2.features.api
 
 extend:
   icinga2_api_enable:

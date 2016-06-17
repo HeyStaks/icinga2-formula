@@ -1,5 +1,8 @@
 base:
   'min1':
     - min1
-  'min[2,3]':
+  'min2':
+    - node
+    - min2
+  'min3':
     - node

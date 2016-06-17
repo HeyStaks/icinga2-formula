@@ -5,8 +5,12 @@ object ApiListener "api" {
   cert_path = SysconfDir + "/icinga2/pki/" + NodeName + ".crt"
   key_path = SysconfDir + "/icinga2/pki/" + NodeName + ".key"
   ca_path = SysconfDir + "/icinga2/pki/ca.crt"
-  {% if fqdn != icinga2.master_host -%}
-  accept_config = true
+{%- if fqdn != icinga2.master_host %}
+  {%- if icinga2.client_mode == "local" %}
   accept_commands = true
-  {% endif -%}
+  accept_config = true
+  {%- elif icinga2.client_mode == "bridge" %}
+  accept_commands = true
+  {%- endif %}
+{%- endif %}
 }
