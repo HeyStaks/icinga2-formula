@@ -137,13 +137,6 @@ icinga2:
           check_command: icinga
           assign:
             - host.name == NodeName
-      procs:
-        type: Service
-        conf:
-          import: generic-service
-          check_command: procs
-          assign:
-            - host.name == NodeName
       swap:
         type: Service
         conf:
@@ -179,12 +172,6 @@ icinga2:
           check_command: load
           assign:
             - host.name == NodeName
-      http_vhosts:
-        type: Service
-        for: (http_vhost => config in host.vars.http_vhosts)
-        conf:
-          import: generic-service
-          check_command: http
       disks:
         type: Service
         for: (disk => config in host.vars.disks)
