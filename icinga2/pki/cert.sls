@@ -9,7 +9,7 @@ include:
 icinga2_node_ca_cert:
   x509.pem_managed:
     - name: {{icinga2.pki_dir}}/ca.crt
-    - text: {{ salt['mine.get'](icinga2.master_host, 'icinga2_ca_cert')[icinga2.master_host]|replace('\n', '') }}
+    - text: {{ salt['mine.get'](icinga2.master_minion_id, 'icinga2_ca_cert')[icinga2.master_minion_id]|replace('\n', '') }}
     - require:
       - file: icinga2_pki_dir
 
@@ -43,7 +43,7 @@ icinga2_node_key_perms:
 icinga2_node_cert:
   x509.certificate_managed:
     - name: {{icinga2.pki_dir}}/{{fqdn}}.crt
-    - ca_server: {{icinga2.master_host}}
+    - ca_server: {{icinga2.master_minion_id}}
     - signing_policy: icinga2
     - public_key: {{icinga2.pki_dir}}/{{fqdn}}.key
     - CN: {{fqdn}}

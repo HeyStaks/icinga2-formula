@@ -7,7 +7,7 @@ include:
 icinga2_node_master_cert:
   x509.pem_managed:
     - name: {{icinga2.pki_dir}}/trusted-master.crt
-    - text: {{ salt['mine.get'](icinga2.master_host, 'icinga2_master_cert')[icinga2.master_host]|replace('\n', '') }}
+    - text: {{ salt['mine.get'](icinga2.master_minion_id, 'icinga2_master_cert')[icinga2.master_minion_id]|replace('\n', '') }}
     - require:
       - file: icinga2_pki_dir
 

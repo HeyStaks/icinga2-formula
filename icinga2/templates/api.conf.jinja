@@ -5,7 +5,7 @@ object ApiListener "api" {
   cert_path = SysconfDir + "/icinga2/pki/" + NodeName + ".crt"
   key_path = SysconfDir + "/icinga2/pki/" + NodeName + ".key"
   ca_path = SysconfDir + "/icinga2/pki/ca.crt"
-  {% if fqdn != icinga2.master_host -%}
+  {% if fqdn != icinga2.master_fqdn -%}
   accept_config = true
   accept_commands = true
   {% endif -%}
