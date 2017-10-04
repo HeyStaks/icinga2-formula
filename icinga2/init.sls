@@ -1,11 +1,25 @@
 {% from "icinga2/map.jinja" import icinga2 with context %}
 
+{% if grains['os_family'] == 'Debian' %}
+
 icinga2_repo:
   pkgrepo.managed:
     - humanname: Icinga2 official repo
     - name: {{ icinga2.pkg_repo }}
     - file: {{ icinga2.repo_file }}
     - key_url: http://packages.icinga.org/icinga.key
+
+{% elif grains['os_family'] == 'RedHat' %}
+
+icinga2_repo:
+  pkgrepo.managed:
+    - name: icinga-stable-release
+    - humanname: ICINGA (stable release for epel)
+    - baseurl: http://packages.icinga.com/epel/$releasever/release/
+    - gpgcheck: 1
+    - gpgkey: http://packages.icinga.com/icinga.key
+
+{% endif %}
 
 icinga2_pkg:
   pkg.installed:
