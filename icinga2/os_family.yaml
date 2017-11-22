@@ -3,7 +3,4 @@ Debian:
   group: nagios
   pkg_repo: deb http://packages.icinga.org/ubuntu icinga-{{ grains.get("oscodename", 'unknown')}} main
   repo_file: /etc/apt/sources.list.d/icinga2.list
-  config_dir: /etc/icinga2
-  ca_dir: /var/lib/icinga2/ca
-  pki_dir: /etc/icinga2/pki
   pki_pkg: python-m2crypto

@@ -2,7 +2,10 @@ icinga2:
   master_minion_id: salt
   master_fqdn: salt
   port: 5665
+  config_dir: /etc/icinga2
   config_subdir: conf.d
+  ca_dir: /var/lib/icinga2/ca
+  pki_dir: /etc/icinga2/pki
   user: icinga
   group: icinga
   config:
