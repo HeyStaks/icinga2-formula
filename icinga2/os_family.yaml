@@ -2,5 +2,6 @@ Debian:
   user: nagios
   group: nagios
   pkg_repo: deb http://packages.icinga.org/ubuntu icinga-{{ grains.get("oscodename", 'unknown')}} main
-  repo_file: /etc/apt/sources.list.d/icinga2.list
   pki_pkg: python-m2crypto
+RedHat:
+  pki_pkg: python-m2ext
