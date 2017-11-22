@@ -1,10 +1,11 @@
 {% from "icinga2/map.jinja" import icinga2 with context %}
 {% from "icinga2/macros.jinja" import printconfig with context %}
+{% set confd_dir = icinga2.config_dir + '/' + icinga2.config_subdir %}
 
 include:
   - icinga2
 
-/etc/icinga2/conf.d:
+{{confd_dir}}:
   file.directory:
     - require:
       - pkg: icinga2
@@ -19,12 +20,12 @@ include:
 
 {% for object, type in conf_files.items() %}
   {% if icinga2.config[object] is defined %}
-/etc/icinga2/conf.d/{{object}}.conf:
+{{confd_dir}}/{{object}}.conf:
   file.managed:
     - listen_in:
       - service: icinga2_service
     - require:
-      - file: /etc/icinga2/conf.d
+      - file: {{confd_dir}}
     - contents: |
     {%- for obj, objopts in icinga2.config[object].items() %}
       {%- if objopts["for"] is defined %}

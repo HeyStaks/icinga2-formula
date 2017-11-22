@@ -2,6 +2,7 @@ icinga2:
   master_minion_id: salt
   master_fqdn: salt
   port: 5665
+  config_subdir: conf.d
   config:
     templates:
       generic-host:
