@@ -7,6 +7,8 @@ include:
 
 {{confd_dir}}:
   file.directory:
+    - user: {{icinga2.user}}
+    - group: {{icinga2.group}}
     - require:
       - pkg: icinga2
 
@@ -26,6 +28,8 @@ include:
       - service: icinga2_service
     - require:
       - file: {{confd_dir}}
+    - user: {{icinga2.user}}
+    - group: {{icinga2.group}}
     - contents: |
     {%- for obj, objopts in icinga2.config[object].items() %}
       {%- if objopts["for"] is defined %}
@@ -43,6 +47,8 @@ icinga2_zones_conf:
   file.managed:
     - name: {{icinga2.config_dir}}/zones.conf
     - source: salt://icinga2/templates/zones.conf.jinja
+    - user: {{icinga2.user}}
+    - group: {{icinga2.group}}
     - template: jinja
     - require:
       - pkg: icinga2

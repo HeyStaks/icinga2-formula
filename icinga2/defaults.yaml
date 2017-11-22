@@ -3,6 +3,8 @@ icinga2:
   master_fqdn: salt
   port: 5665
   config_subdir: conf.d
+  user: icinga
+  group: icinga
   config:
     templates:
       generic-host:
