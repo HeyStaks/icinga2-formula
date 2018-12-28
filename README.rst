@@ -2,6 +2,8 @@
 icinga2
 =======
 
+NOTE: Project no longer maintained
+
 Icinga2 Formula
 
 .. note::
